@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>抽奖转盘</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            width: 300px;
+            height: 300px;
+            position: relative;
+        }
+        .wheel {
+            width: 100%;
+            height: 100%;
+            background: conic-gradient(
+                #FF5733 0deg 60deg,
+                #F7DC6F 60deg 120deg,
+                #85C1E9 120deg 180deg,
+                #58D68D 180deg 240deg,
+                #D7BDE2 240deg 300deg,
+                #EC7063 300deg 360deg
+            );
+            border-radius: 50%;
+            position: absolute;
+            transform-origin: center center; /* 圆盘中心居中 */
+            transition: transform 2s ease-out; /* 使用过渡效果 */
+        }
+        .prize-text-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+        .prize-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%); /* 将文本中心居中于容器 */
+            font-size: 14px;
+        }
+        .prize-text:nth-child(1) {
+            transform: translate(-50%, -50%) rotate(30deg) translateY(-90px); /* 调整角度和距离 */
+        }
+        .prize-text:nth-child(2) {
+            transform: translate(-50%, -50%) rotate(90deg) translateY(-90px);
+        }
+        .prize-text:nth-child(3) {
+            transform: translate(-50%, -50%) rotate(150deg) translateY(-90px);
+        }
+        .prize-text:nth-child(4) {
+            transform: translate(-50%, -50%) rotate(210deg) translateY(-90px);
+        }
+        .prize-text:nth-child(5) {
+            transform: translate(-50%, -50%) rotate(270deg) translateY(-90px);
+        }
+        .prize-text:nth-child(6) {
+            transform: translate(-50%, -50%) rotate(330deg) translateY(-90px);
+        }
+        /* 添加红色竖线 */
+        .vertical-line {
+            position: absolute;
+            top: 50%; /* 设置竖线起点为圆盘中心 */
+            left: 50%;
+            width: 2px;
+            height: 30px; /* 调整竖线长度 */
+            background-color: red; /* 竖线的颜色 */
+            transform: translateX(-50%);
+            z-index: 1; /* 竖线在上层 */
+        }
+        /* 添加红色倒三角形 */
+        .triangle {
+            position: absolute;
+            top: 60%; /* 设置倒三角形起点为竖线的底部 */
+            left: 50%; /* 保持在中心 */
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 20px solid red; /* 倒三角形的颜色和大小 */
+            transform: translateX(-50%);
+            z-index: 2; /* 倒三角形在最上层 */
+        }
+        .button-container {
+            text-align: center;
+            position: absolute;
+            bottom: 15px; /* 提高按钮位置，以避免重叠 */
+            left: 120%;
+            transform: translateX(-40%);
+        }
+        button {
+            display: block;
+            margin: 0 auto;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="wheel" id="wheel">
+            <div class="prize-text-container">
+                <div class="prize-text">重庆串串</div>
+                <div class="prize-text">麻辣香锅</div>
+                <div class="prize-text">贝果</div>
+                <div class="prize-text">寿司</div>
+                <div class="prize-text">泰国菜</div>
+                <div class="prize-text">烧烤</div>
+            </div>
+        </div>
+        <!-- 添加红色竖线 -->
+        <div class="vertical-line"></div>
+        <!-- 添加红色倒三角形 -->
+        <div class="triangle"></div>
+        <div class="button-container">
+            <button id="startButton">开始</button>
+            <button id="stopButton">停止</button>
+        </div>
+    </div>
+
+    <script>
+        const wheel = document.getElementById('wheel');
+        const startButton = document.getElementById('startButton');
+        const stopButton = document.getElementById('stopButton');
+        let spinning = false;
+        let currentRotation = 0;
+        let stopping = false;
+
+        startButton.addEventListener('click', () => {
+            if (!spinning) {
+                if (stopping) {
+                    // 如果已经停止过，重置当前旋转角度
+                    currentRotation = 0;
+                }
+                // 开始旋转
+                wheel.style.transition = 'none'; // 禁用过渡效果
+                requestAnimationFrame(rotateWheel);
+                spinning = true;
+
+                // 设置停止标志
+                stopping = false;
+            }
+        });
+
+
+        stopButton.addEventListener('click', () => {
+            if (spinning && !stopping) {
+                // 停止旋转并在两圈后缓慢停下
+                currentRotation += 360; // 两圈是720度
+                wheel.style.transition = 'transform 2s ease-out';
+                wheel.style.transform = `rotate(${currentRotation}deg)`;
+                spinning = false;
+                stopping = true;
+            }
+        });
+
+        function rotateWheel() {
+            if (spinning && !stopping) {
+                currentRotation += 4; // 保持原来的旋转速度
+                wheel.style.transform = `rotate(${currentRotation}deg)`;
+                requestAnimationFrame(rotateWheel);
+            }
+        }
+    </script>
+</body>
+</html>
